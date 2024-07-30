@@ -241,9 +241,9 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 	piparm[IPARM_TASKS2D_WIDTH] 			= globDoublePrecision ? 256 : 128;
     piparm[IPARM_REFINEMENT]             = PastixRefineGMRES;
 
+//    piparm[IPARM_REUSE_LU]                          = firstIter ? 0 : 1;
+//    piparm[IPARM_REUSE_LU]                          = forceRedo ? 2 : 1;
 
-	piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
-	piparm[IPARM_REUSE_LU] 				= forceRedo ? 2 : 1;
 	
     piparm[IPARM_GPU_MEMORY_PERCENTAGE] 	= 95;
     piparm[IPARM_GPU_MEMORY_BLOCK_SIZE] 	= 64 * 1024;
@@ -835,7 +835,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 			buffer[i] = (float) x[i];
         }
 		
-		rc = pastix_task_solve( pastix_data, *nrhs, buffer, spm->n );
+		rc = pastix_task_solve( pastix_data, spm->gNexp, *nrhs, buffer, spm->n );
 
 		#pragma omp parallel for
 		for(i = 0; i < (*nrhs) * (*neq); i++){
@@ -845,7 +845,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
         buffer = NULL;
 	}
 	else{
-		rc = pastix_task_solve( pastix_data, *nrhs, x, spm->n );
+		rc = pastix_task_solve( pastix_data,spm->gNexp, *nrhs, x, spm->n );
 	}
 
     // check for NaN in the solution
@@ -937,7 +937,7 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
 	if( redo && !firstIter ){
         if(spm->values == aupastix) spm->values = NULL;
-        if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
+        // if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
         if(spm->rowptr == irowpastix) spm->rowptr = NULL;
 		spmExit( spm );
