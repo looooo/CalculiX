@@ -7,14 +7,15 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64"]
 
 [tasks]
-build = {cmd = ["cd", "ccx*/src/", "&&", "make", "-f", "Makefile_conda",
+build = {cmd = ["cd", "ccx*/src/", "&&", 
+                "export", "CFLAGS=$CFLAGS -Wno-error=implicit-function-declaration", "&&",
+                "make", "-f", "Makefile_conda",
                 "SPOOLES_INCLUDE_DIR='${CONDA_PREFIX}/include/spooles'",
                 "PASTIX_INCLUDE='${CONDA_PREFIX}/include/pastix'",
                 "LIB_DIR='${CONDA_PREFIX}/lib'",
                 "VERSION='2.21'"]}
-install = {cmd = ["mkdir", "-p", "${CONDA_PREFIX}/bin", "&&",
-                  "cp", "ccx_*_conda", "${CONDA_PREFIX}/bin/ccx"], depends-on = ["build"]}
-
+install = {cmd = ["cp", "ccx*/src/ccx_*_conda", "$CONDA_PREFIX/bin/ccx"], depends-on = ["build"]}
+# "mkdir", "-p", "${CONDA_PREFIX}/bin", "&&",
 [dependencies]
 libblas = ">=3.9.0,<4"
 liblapack = ">=3.9.0,<4"
