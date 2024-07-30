@@ -1,0 +1,25 @@
+[project]
+name = "CalculiX"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["looooo <sppedflyer@gmail.com>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tasks]
+build = {cmd = ["cd", "ccx*/src/", "&&", "make", "-f", "Makefile_conda",
+    			"SPOOLES_INCLUDE_DIR='${CONDA_PREFIX}/include/spooles'",
+    			"PASTIX_INCLUDE='${CONDA_PREFIX}/include/pastix'",
+    			"LIB_DIR='${CONDA_PREFIX}/lib'",
+    			"VERSION='2.21'"]}
+install = {cmd = ["mkdir", "-p", "${CONDA_PREFIX}/bin", "&&",
+				  "cp", "ccx_*_conda", "${CONDA_PREFIX}/bin/ccx"], depends-on = ["build"]}
+
+[dependencies]
+libblas = ">=3.9.0,<4"
+liblapack = ">=3.9.0,<4"
+arpack = ">=3.9.1,<4"
+spooles = ">=2.2.0,<3"
+pastix = ">=6.4.0,<7"
+make = ">=4.3,<5"
+gfortran = ">=13.2.0,<14"
