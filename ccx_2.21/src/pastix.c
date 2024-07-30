@@ -181,9 +181,9 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 			ITG *jq, ITG *nzs3){
 	// if reusing, only update the value pointer of the sparse matrix
 	if(!redo){
-	    pastixResetSteps(pastix_data);
-        if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
-		spm->values = aupastix;
+	    // pastixResetSteps(pastix_data);
+        // if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
+		// spm->values = aupastix;
 
 		printf("\n");
 		spmPrintInfo( spm, stdout );
@@ -515,7 +515,8 @@ double *sigma,ITG *icol, ITG *irow,
 			if((nzsTotal * 2 + *neq) > pastix_nnzBound){
 				// perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-				pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal * 2 + *neq), gpu);
+				//pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal * 2 + *neq), gpu);
+				aupastix = calloc ( 1.1 * (nzsTotal * 2 + *neq),  sizeof ( double ) );
 				pastix_nnzBound = 1.1 * (nzsTotal * 2 + *neq);
 			}
             if(irowpastix != NULL ){
@@ -652,7 +653,8 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
        		if((nzsTotal + *neq) > pastix_nnzBound){
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-            	pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal + *neq), gpu);
+            	// pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal + *neq), gpu);
+   				aupastix = calloc ( 1.1 * (nzsTotal + *neq),  sizeof ( double ) );
    				pastix_nnzBound = 1.1 * (nzsTotal + *neq);
             }
 
