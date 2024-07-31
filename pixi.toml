@@ -21,11 +21,11 @@ configure = {cmd = ["cd", "ccx*/src/", "&&",
                 "export", "CFLAGS=$CFLAGS -Wno-error=implicit-function-declaration", "&&",
                 "make", "-f", "Makefile_conda",
                 "SPOOLES_INCLUDE_DIR='${CONDA_PREFIX}/include/spooles'",
-                "PASTIX_INCLUDE='${CONDA_PREFIX}/include/pastix'",
                 "LIB_DIR='${CONDA_PREFIX}/lib'",
                 "VERSION='2.21'"], depends-on = ["build_pastix"]}
 build = {cmd = ["cp", "ccx*/src/ccx_*_conda", "$CONDA_PREFIX/bin/ccx"], depends-on = ["configure"]}
 test = "ccx tests/test"
+
 [dependencies]
 libblas = ">=3.9.0,<4"
 liblapack = ">=3.9.0,<4"
