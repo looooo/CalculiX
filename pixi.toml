@@ -22,7 +22,7 @@ configure = {cmd = ["cd", "ccx*/src/", "&&",
                 "make", "-f", "Makefile_conda",
                 "SPOOLES_INCLUDE_DIR='${CONDA_PREFIX}/include/spooles'",
                 "LIB_DIR='${CONDA_PREFIX}/lib'",
-                "VERSION='2.21'"], depends-on = ["build_pastix"]}
+                "VERSION='2.22'"], depends-on = ["build_pastix"]}
 build = {cmd = ["cp", "ccx*/src/ccx_*_conda", "$CONDA_PREFIX/bin/ccx"], depends-on = ["configure"]}
 test = "lldb ccx tests/test"
 
