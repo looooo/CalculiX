@@ -24,7 +24,7 @@ configure = {cmd = ["cd", "ccx*/src/", "&&",
                 "LIB_DIR='${CONDA_PREFIX}/lib'",
                 "VERSION='2.21'"], depends-on = ["build_pastix"]}
 build = {cmd = ["cp", "ccx*/src/ccx_*_conda", "$CONDA_PREFIX/bin/ccx"], depends-on = ["configure"]}
-test = "ccx tests/test"
+test = "lldb ccx tests/test"
 
 [dependencies]
 libblas = ">=3.9.0,<4"
