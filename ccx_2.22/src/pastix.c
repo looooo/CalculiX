@@ -182,9 +182,9 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 			ITG *jq, ITG *nzs3){
 	// if reusing, only update the value pointer of the sparse matrix
 	if(!redo){
-	    pastixResetSteps(pastix_data);
-        if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
-		spm->values = aupastix;
+	    // pastixResetSteps(pastix_data);
+        // if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
+		// spm->values = aupastix;
 
 		printf("\n");
 		spmPrintInfo( spm, stdout );
@@ -243,8 +243,8 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     piparm[IPARM_REFINEMENT]             = PastixRefineGMRES;
 
 
-	piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
-	piparm[IPARM_REUSE_LU] 				= forceRedo ? 2 : 1;
+	// piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
+	// piparm[IPARM_REUSE_LU] 				= forceRedo ? 2 : 1;
 	
     piparm[IPARM_GPU_MEMORY_PERCENTAGE] 	= 95;
     piparm[IPARM_GPU_MEMORY_BLOCK_SIZE] 	= 64 * 1024;
@@ -516,7 +516,8 @@ double *sigma,ITG *icol, ITG *irow,
 			if((nzsTotal * 2 + *neq) > pastix_nnzBound){
 				// perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-				pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal * 2 + *neq), gpu);
+				// pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal * 2 + *neq), gpu);
+				aupastix = calloc ( 1.1 * (nzsTotal * 2 + *neq),  sizeof ( double ) );
 				pastix_nnzBound = 1.1 * (nzsTotal * 2 + *neq);
 			}
             if(irowpastix != NULL ){
@@ -653,7 +654,8 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
        		if((nzsTotal + *neq) > pastix_nnzBound){
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-            	pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal + *neq), gpu);
+            	// pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal + *neq), gpu);
+   				aupastix = calloc ( 1.1 * (nzsTotal * 2 + *neq),  sizeof ( double ) );
    				pastix_nnzBound = 1.1 * (nzsTotal + *neq);
             }
 
@@ -836,7 +838,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 			buffer[i] = (float) x[i];
         }
 		
-		rc = pastix_task_solve( pastix_data, *nrhs, buffer, spm->n );
+		rc = pastix_task_solve( pastix_data, spm->nexp, *nrhs, buffer, spm->n );
 
 		#pragma omp parallel for
 		for(i = 0; i < (*nrhs) * (*neq); i++){
@@ -846,7 +848,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
         buffer = NULL;
 	}
 	else{
-		rc = pastix_task_solve( pastix_data, *nrhs, x, spm->n );
+		rc = pastix_task_solve( pastix_data, spm->nexp, *nrhs, x, spm->n );
 	}
 
     // check for NaN in the solution
@@ -938,7 +940,7 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
 	if( redo && !firstIter ){
         if(spm->values == aupastix) spm->values = NULL;
-        if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
+        // if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
         if(spm->rowptr == irowpastix) spm->rowptr = NULL;
 		spmExit( spm );
