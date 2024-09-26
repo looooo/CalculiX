@@ -18,6 +18,7 @@ configure_pastix = { cmd = ["cmake", "-G", "Ninja", "-B", "build", "-S", "pastix
                              "-D", "BLAS_DIR=$CONDA_PREFIX/lib"], depends-on = ["init"]}
 build_pastix = {cmd = ["ninja", "-C", "build", "install"], depends-on = ["configure_pastix"]}
 test_pastix = {cmd = ["python", "tests/pastix_simple.py"], depends-on = ["build_pastix"]}
+c_test_pastix = {cmd = ["ninja", "-C", "build", "test"], depends-on = ["configure_pastix"]}
 configure = {cmd = ["cd", "ccx*/src/", "&&", 
                 "export", "CFLAGS=$CFLAGS -Wno-error=implicit-function-declaration", "&&",
                 "make", "-f", "Makefile_conda",
