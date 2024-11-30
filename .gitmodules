@@ -1,3 +1,0 @@
-[submodule "pastix"]
-	path = pastix
-	url = git@github.com:looooo/pastix.git
