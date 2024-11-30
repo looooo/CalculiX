@@ -9,43 +9,21 @@ platforms = ["osx-arm64", "linux-aarch64"]
 [tasks]
 test_activation = "echo $CMAKE_PREFIX_PATH"
 init = { cmd = ["git", "submodule", "update", "--init", "--recursive"]}
-configure_pastix = { cmd = ["cmake", "-G", "Ninja", "-B", "build", "-S", "pastix",
-                             "-D", "GIT_SUBMODULE=OFF",
-                             "-D", "CMAKE_BUILD_TYPE='Release'",
-                             "-D", "BUILD_SHARED_LIBS=ON",
-                             "-D", "CMAKE_INSTALL_PREFIX:FILEPATH=$CONDA_PREFIX",
-                             "-D", "PASTIX_ORDERING_SCOTCH:BOOL=ON",
-                             "-D", "BLAS_DIR=$CONDA_PREFIX/lib"], depends-on = ["init"]}
-build_pastix = {cmd = ["ninja", "-C", "build", "install"], depends-on = ["configure_pastix"]}
-test_pastix = {cmd = ["python", "tests/pastix_simple.py"], depends-on = ["build_pastix"]}
-c_test_pastix = {cmd = ["ninja", "-C", "build", "test"], depends-on = ["configure_pastix"]}
 configure = {cmd = ["cd", "ccx*/src/", "&&", 
                 "export", "CFLAGS=$CFLAGS -Wno-error=implicit-function-declaration", "&&",
                 "make", "-f", "Makefile_conda",
                 "SPOOLES_INCLUDE_DIR='${CONDA_PREFIX}/include/spooles'",
                 "LIB_DIR='${CONDA_PREFIX}/lib'",
-                "VERSION='2.22'"], depends-on = ["build_pastix"]}
+                "VERSION='2.22'"]}
 build = {cmd = ["cp", "ccx*/src/ccx_*_conda", "$CONDA_PREFIX/bin/ccx"], depends-on = ["configure"]}
 test = "ccx tests/test"
 
 [dependencies]
-libblas = "*"
-liblapack = "*"
 arpack = "*"
 spooles = "*"
 make = "*"
 gfortran = "*"
-libcblas = "*"
-liblapacke = "*"
-libhwloc = "*"
-metis = "*"
-ninja = "*"
-cmake = "*"
-pkgconfig = "*"
-python = ">=3.12.4,<4"
-libscotch = "*"
-numpy = "*"
-scipy = "*"
+pastix = "*"
 
 [target.linux-aarch64.dependencies]
 gxx = "*"
